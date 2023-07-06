@@ -16,6 +16,28 @@
 
 // const searchEndpoint = "https://api.thecatapi.com/v1/breeds/search?q=Siberian";
 
+const request = require("request");
+
+const fetchBreedDescription = function (breedName, callback) {
+  const searchEndpoint = `https://api.thecatapi.com/v1/breeds/search?q=${breedName}`;
+
+  request(searchEndpoint, (error, response, body) => {
+    if (error) {
+      callback(error, null);
+    } else {
+      const data = JSON.parse(body);
+      if (data.length > 0) {
+        const breed = data[0];
+        callback(null, breed.description);
+      } else {
+        callback(null, null);
+      }
+    }
+  });
+};
+
+module.exports = { fetchBreedDescription };
+
 // request(searchEndpoint, (error, response, body) => {
 //   if (error) {
 //     console.error("Error:", error);
@@ -24,26 +46,3 @@
 //     console.log("Type of body:", typeof body);
 //   }
 // });
-////////////////////////////////////////////////////////Search for breed + Breed Not Found Error
-const request = require("request");
-
-const breedName = process.argv[2]; // get breed from command line
-
-const searchEndpoint = `https://api.thecatapi.com/v1/breeds/search?q=${breedName}`;
-
-request(searchEndpoint, (error, response, body) => {
-  if (error) {
-    console.error("Request failed:", error);
-  } else {
-    const data = JSON.parse(body);
-    console.log(data);
-    console.log(typeof data);
-
-    if (data.length > 0) {
-      const firstEntry = data[0];
-      console.log("Description:", firstEntry.description);
-    } else {
-      console.log("That breed was not found.");
-    }
-  }
-});
